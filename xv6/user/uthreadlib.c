@@ -78,8 +78,7 @@ lock_acquire(lock_t* lock)
 void
 lock_release(lock_t* lock)
 {
-  // while(xchg(&lock->locked, 0) == 0)
-  // 	;
+
 	xchg(&lock->locked, 0);
 }
 
