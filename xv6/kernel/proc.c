@@ -507,8 +507,6 @@ clone(void(*fcn)(void*), void* arg, void* stack)
   np->state = RUNNABLE;
   safestrcpy(np->name, proc->name, sizeof(proc->name));
 
-  // cprintf("thread's pid %d\n", (int)pid);
-  // cprintf("p->pthread is %d\n", (int)np->pthread);
   return pid;
 
 }
@@ -534,23 +532,14 @@ join(int pid)
         release(&ptable.lock);
         return -1;
       }
-      // cprintf("pid is %d\n", (int)pid);
-      // cprintf("proc pid is %d\n", (int)p->pid);
-      // cprintf("p->state is %d\n", (int)p->state);
+
 
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
-        // cprintf("Found a thread \n");
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
-        // deallocuvm(p->pgdir, )
-        // growproc(0);
-        //p->ustack = 0;
-        //freevm(p->pgdir);
-        // kfree(p->ustack);
-        // p->ustack = 0;
         p->state = UNUSED;
         p->pid = 0;
         p->parent = 0;
@@ -579,20 +568,7 @@ void
 threadsleep(void* chan, lock_t* lock)
 {
 
-  // if(lock != &ptable.lock){  //DOC: sleeplock2
-  //   acquire(&ptable.lock);
-  //   release(lock);
-  // }
-
-  // if(proc == 0)
-  //   panic("sleep");
-
-  // if(lock == 0)
-  //   panic("sleep without lock");
-
   acquire(&ptable.lock);
-  // while(xchg(&lock->locked, 0) == 0)
-  //   ;
   xchg(&lock->locked, 0);
   proc->chan = chan;
   proc->state = SLEEPING;
@@ -601,12 +577,6 @@ threadsleep(void* chan, lock_t* lock)
   release(&ptable.lock);
   while(xchg(&lock->locked, 1) != 0)
     ;  //atomically release lock -- The xchg is atomic.
-
-
-  // if(lock != &ptable.lock){  //DOC: sleeplock2
-  //   release(&ptable.lock);
-  //   acquire(lock);
-  // }
   
 }
 
